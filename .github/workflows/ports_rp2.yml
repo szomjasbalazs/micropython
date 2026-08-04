@@ -31,3 +31,8 @@ jobs:
       run: tools/ci.sh rp2_setup
     - name: Build
       run: tools/ci.sh rp2_build
+    - name: Kész firmware kimentése
+      uses: actions/upload-artifact@v4
+      with:
+        name: pico2w-firmware
+        path: 'micropython repo/ports/rp2/build-RPI_PICO2_W/*.uf2'
