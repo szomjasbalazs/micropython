@@ -3,7 +3,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       
@@ -15,6 +15,7 @@ jobs:
         
       - name: Pico 2 W egyedi fordítás
         run: |
+          git submodule update --init lib/wiznet5k
           cd ports/rp2
           make BOARD=RPI_PICO2_W submodules
           make BOARD=RPI_PICO2_W
