@@ -3,27 +3,29 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - name: Rendszer letöltése (minden kiegészítővel)
+      - name: Kód letöltése
         uses: actions/checkout@v4
-        with:
-          submodules: true
 
-      - name: Szükséges Linux csomagok telepítése
+      - name: Telepítések
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi build-essential cmake python3-pyelftools
 
-      - name: Alaprendszer (mpy-cross) fordítása
+      - name: mpy-cross fordítása
         run: make -C mpy-cross
 
-      - name: A Pico 2 W firmware lefordítása
+      - name: W5500 és minden hiányzó modul letöltése
+        run: git submodule update --init --recursive
+
+      - name: Fordítás indítása
         run: |
           cd ports/rp2
+          make BOARD=RPI_PICO2_W clean
           make BOARD=RPI_PICO2_W submodules
           make BOARD=RPI_PICO2_W
 
-      - name: Fájl kimentése letöltésre
+      - name: Kész fájl kimentése
         uses: actions/upload-artifact@v4
         with:
           name: pico2w-w5500-firmware
-          path: ports/rp2/build-RPI_PICO2_W/*.uf2
+          path: ports/rp2/build-RPI_PICO2_W/firmware.uf2
