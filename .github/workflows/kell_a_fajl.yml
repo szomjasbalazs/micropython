@@ -1,0 +1,26 @@
+name: PICO2W_W5500_Letoltes
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Szükséges programok telepítése a felhőben
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi build-essential python3-pyelftools
+        
+      - name: Alaprendszer (mpy-cross) fordítása
+        run: make -C mpy-cross
+        
+      - name: Pico 2 W egyedi fordítás
+        run: |
+          cd ports/rp2
+          make BOARD=RPI_PICO2_W submodules
+          make BOARD=RPI_PICO2_W
+          
+      - name: KÉSZ FÁJL KIMENTÉSE LETÖLTÉSRE
+        uses: actions/upload-artifact@v4
+        with:
+          name: pico2w-w5500-firmware
+          path: ports/rp2/build-RPI_PICO2_W/firmware.uf2
